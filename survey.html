@@ -398,6 +398,7 @@
 </div><!-- /container -->
 
 <div class="sticky-generate">
+    <button id="btn-return-to-job" class="btn-return-job" style="display:none;" onclick="">← Return to Job</button>
     <button id="generateSurveyReport" onclick="generateSurveyPDF()">⚡ Generate Survey Report PDF</button>
 </div>
 
@@ -699,13 +700,52 @@ function initSectionWatchers() {
     });
 }
 
+function prefillFromJob() {
+    const params = new URLSearchParams(window.location.search);
+    const returnUrl = params.get('returnUrl');
+    if (!returnUrl && !params.get('site') && !params.get('address')) return;
+
+    const fieldMap = {
+        siteAddress:  params.get('address')  || '',
+        surveyDate:   params.get('date')     || '',
+        surveyorName: params.get('engineer') || '',
+        siteName:     params.get('site')     || '',
+        jobReference: params.get('ref')      || ''
+    };
+
+    Object.entries(fieldMap).forEach(([id, value]) => {
+        if (!value) return;
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.value = value;
+        el.readOnly = true;
+        el.style.opacity = '0.8';
+        el.style.cursor = 'not-allowed';
+        const label = document.querySelector('label[for="' + id + '"]');
+        if (label && !label.querySelector('.from-job-badge')) {
+            const badge = document.createElement('span');
+            badge.className = 'from-job-badge';
+            badge.textContent = 'FROM JOB';
+            label.appendChild(badge);
+        }
+    });
+
+    if (returnUrl) {
+        const btn = document.getElementById('btn-return-to-job');
+        if (btn) {
+            btn.style.display = 'inline-block';
+            btn.onclick = () => { window.location.href = returnUrl; };
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     restoreSectionStates();
     initSectionWatchers();
     updateAllDots();
     const d = document.getElementById('surveyDate');
     if (d && !d.value) d.valueAsDate = new Date();
-
+    prefillFromJob();
 });
 </script>
 </body>
