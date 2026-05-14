@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "lps-report",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-p", "3001", "."],
+      "port": 3001
+    },
+    {
+      "name": "wiggle",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-p", "3002", "C:\\Users\\luke8\\OneDrive\\Desktop\\FSM\\Latest May 20206\\Wiggle-main"],
+      "port": 3002
+    }
+  ]
+}

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remedial Report — StrikeR</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/png" href="assets/SP Bolt 400x400.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="StrikeR">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+<body>
+<div class="container">
+
+    <div class="nav-header">
+        <button class="nav-button back-button" onclick="location.href='reports.html'">← Back to Reports</button>
+        <button class="nav-button" onclick="location.href='tools.html'">Tools</button>
+    </div>
+
+    <h1>Remedial Report</h1>
+
+    <!-- ===================== SITE INFORMATION ===================== -->
+    <div class="section" id="sec-site">
+        <button class="section-header" onclick="toggleSection('sec-site')">
+            <span class="section-title">📋 Site Information</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-site"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="siteName">Site Name:</label>
+                    <input type="text" id="siteName" placeholder="e.g. Upper Norwood Library..." oninput="this.value=this.value.replace(/(?:^|\s)\S/g,c=>c.toUpperCase())">
+                </div>
+                <div class="form-group">
+                    <label for="jobReference">Job Reference:</label>
+                    <input type="text" id="jobReference" placeholder="Enter job reference...">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="siteAddress">Site Address:</label>
+                    <textarea id="siteAddress" rows="3" placeholder="Enter full site address..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="remedialDate">Remedial Date:</label>
+                    <input type="date" id="remedialDate">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="remedialEngineer">Remedial Engineer:</label>
+                    <input type="text" id="remedialEngineer" placeholder="Enter engineer name..." oninput="this.value=this.value.replace(/(?:^|\s)\S/g,c=>c.toUpperCase())">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Building Image (Cover Page):</label>
+                <div class="image-upload" onclick="document.getElementById('buildingImageFile').click()">
+                    <input type="file" id="buildingImageFile" accept="image/*" class="hidden-file-input"
+                        onchange="handleSingleImage(this, 'buildingImagePreview', 'building')">
+                    <div id="buildingImagePreview">Click to upload building photo</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== REPAIRS TO COMPLETE ===================== -->
+    <div class="section" id="sec-repairs">
+        <button class="section-header" onclick="toggleSection('sec-repairs')">
+            <span class="section-title">🔧 Repairs to Complete</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-repairs"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+            <p style="font-style:italic;color:#6c757d;margin-bottom:14px;">Tick each repair carried out. Where shown, enter the quantity or earth point reference. Upload photos for each repair using the camera button.</p>
+            <div id="repairsListContainer"></div>
+            <div class="form-group" style="margin-top:18px;border-top:1px solid #dee2e6;padding-top:16px;">
+                <label style="font-weight:600;display:block;margin-bottom:8px;">Custom Repair / Free Text:</label>
+                <div style="display:flex;gap:10px;align-items:flex-start;">
+                    <textarea id="customRepairText" rows="2" style="flex:1;" placeholder="Describe a repair not listed above..."></textarea>
+                    <button class="add-btn" onclick="addCustomRepair()" style="margin-top:0;white-space:nowrap;">+ Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== SELECTED REPAIRS ===================== -->
+    <div class="section" id="sec-selected">
+        <button class="section-header" onclick="toggleSection('sec-selected')">
+            <span class="section-title">✅ Selected Repairs</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-selected"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+            <div id="selectedRepairsContainer">
+                <p style="color:#888;font-style:italic;font-size:13px;">No repairs selected yet. Tick repairs in the section above.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== ADDITIONAL REPAIRS ===================== -->
+    <div class="section" id="sec-additional">
+        <button class="section-header" onclick="toggleSection('sec-additional')">
+            <span class="section-title">➕ Additional Repairs Required</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-additional"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+            <div class="form-group">
+                <label for="additionalRepairs">Additional Repairs Discovered On Site:</label>
+                <textarea id="additionalRepairs" rows="4" placeholder="Enter any additional repairs discovered during the remedial visit (if any)..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== COMPLETION NOTES ===================== -->
+    <div class="section" id="sec-completion">
+        <button class="section-header" onclick="toggleSection('sec-completion')">
+            <span class="section-title">📝 Completion Notes</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-completion"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+            <div class="form-group">
+                <label for="complianceResult">Compliance Result:</label>
+                <select id="complianceResult" onchange="updateAllDots()">
+                    <option value="">— Not applicable / no compliance determination —</option>
+                    <option value="PASS">PASS — System now compliant</option>
+                    <option value="FAIL">FAIL — System remains non-compliant</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="completionNotes">General Comments / Completion Status:</label>
+                <textarea id="completionNotes" rows="5" placeholder="Enter general comments about the remedial work, completion status, outstanding items..."></textarea>
+            </div>
+        </div>
+    </div>
+
+        <!-- ══ Client Signature Section ══ -->
+        <div class="section" id="sec-client-sig" style="margin-bottom:80px;">
+            <button class="section-header" onclick="toggleSection('sec-client-sig')">
+                <span class="section-title">✍️ Client Signature</span>
+                <span class="section-right"><span class="status-dot" id="dot-sec-client-sig"></span><span class="chevron">▾</span></span>
+            </button>
+            <div class="section-body" id="body-sec-client-sig">
+                <div style="text-align:center;padding:16px 0;">
+                    <div id="sigSavedIndicator" style="display:none;margin-bottom:12px;">
+                        <span style="color:#27ae60;font-weight:700;font-size:15px;">✅ Signature saved</span>
+                        <span id="sigSavedName" style="color:var(--text-muted);font-size:13px;margin-left:8px;"></span>
+                    </div>
+                    <button type="button" id="btnOpenSigModal" onclick="openSigModal()">✍️ Add Client Signature</button>
+                </div>
+            </div>
+        </div>
+        <!-- ══ End Client Signature Section ══ -->
+
+</div><!-- /container -->
+
+<div class="sticky-generate">
+    <button id="generateRemedialReport" onclick="generateRemedialPDF()">⚡ Generate Remedial Report PDF</button>
+</div>
+
+<!-- ══ Client Signature Modal ══ -->
+<div id="sigModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;">
+    <div style="background:var(--dark2);border:1px solid var(--border);border-radius:14px;padding:28px 24px;width:92%;max-width:440px;box-shadow:0 8px 40px rgba(0,0,0,0.6);">
+        <h3 style="margin:0 0 18px;font-size:1.1em;color:var(--text);">✍️ Client Signature</h3>
+        <div class="form-group" style="margin-bottom:14px;">
+            <label for="sigModalName">Site Staff Name</label>
+            <input type="text" id="sigModalName" placeholder="Enter name..."
+                oninput="this.value=this.value.replace(/(?:^|\s)\S/g,c=>c.toUpperCase())">
+        </div>
+        <div class="form-group" style="margin-bottom:16px;">
+            <label>Signature</label>
+            <div style="border:2px solid var(--primary);border-radius:8px;background:#fff;">
+                <canvas id="sigModalCanvas" width="380" height="150"
+                    style="width:100%;height:150px;display:block;border-radius:6px;cursor:crosshair;touch-action:none;"></canvas>
+            </div>
+            <button type="button" onclick="clearSigModal()" style="margin-top:6px;background:var(--dark3);color:var(--text);padding:5px 14px;border-radius:5px;font-size:12px;">Clear</button>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+            <button type="button" onclick="closeSigModal()" style="background:var(--dark3);color:var(--text);">Cancel</button>
+            <button type="button" onclick="submitSigModal()">✅ Save Signature</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let _sigCanvas, _sigCtx, _sigDrawing = false;
+let _clientSignatureData = null;
+let _clientSignatureName = '';
+
+function openSigModal() {
+    const modal = document.getElementById('sigModal');
+    modal.style.display = 'flex';
+    _sigCanvas = document.getElementById('sigModalCanvas');
+    _sigCtx    = _sigCanvas.getContext('2d');
+    _sigCtx.clearRect(0, 0, _sigCanvas.width, _sigCanvas.height);
+    if (_clientSignatureData) {
+        const img = new Image();
+        img.onload = () => _sigCtx.drawImage(img, 0, 0);
+        img.src = _clientSignatureData;
+    }
+    document.getElementById('sigModalName').value = _clientSignatureName || '';
+    _sigCanvas.onmousedown  = e => { _sigDrawing = true; _sigCtx.beginPath(); const p = _sigPos(e); _sigCtx.moveTo(p.x, p.y); };
+    _sigCanvas.onmousemove  = e => { if (!_sigDrawing) return; const p = _sigPos(e); _sigCtx.lineTo(p.x, p.y); _sigCtx.strokeStyle='#111'; _sigCtx.lineWidth=2; _sigCtx.lineCap='round'; _sigCtx.stroke(); };
+    _sigCanvas.onmouseup    = () => _sigDrawing = false;
+    _sigCanvas.onmouseleave = () => _sigDrawing = false;
+    _sigCanvas.ontouchstart = e => { e.preventDefault(); _sigDrawing = true; _sigCtx.beginPath(); const p = _sigTouchPos(e); _sigCtx.moveTo(p.x, p.y); };
+    _sigCanvas.ontouchmove  = e => { e.preventDefault(); if (!_sigDrawing) return; const p = _sigTouchPos(e); _sigCtx.lineTo(p.x, p.y); _sigCtx.strokeStyle='#111'; _sigCtx.lineWidth=2; _sigCtx.lineCap='round'; _sigCtx.stroke(); };
+    _sigCanvas.ontouchend   = e => { e.preventDefault(); _sigDrawing = false; };
+}
+function _sigPos(e) {
+    const r = _sigCanvas.getBoundingClientRect();
+    return { x: (e.clientX - r.left) * (_sigCanvas.width / r.width), y: (e.clientY - r.top) * (_sigCanvas.height / r.height) };
+}
+function _sigTouchPos(e) {
+    const t = e.touches[0], r = _sigCanvas.getBoundingClientRect();
+    return { x: (t.clientX - r.left) * (_sigCanvas.width / r.width), y: (t.clientY - r.top) * (_sigCanvas.height / r.height) };
+}
+function clearSigModal() {
+    if (_sigCtx) _sigCtx.clearRect(0, 0, _sigCanvas.width, _sigCanvas.height);
+}
+function closeSigModal() {
+    document.getElementById('sigModal').style.display = 'none';
+}
+function submitSigModal() {
+    const name = document.getElementById('sigModalName').value.trim();
+    const blank = document.createElement('canvas');
+    blank.width = _sigCanvas.width; blank.height = _sigCanvas.height;
+    const isEmpty = !_sigCtx || _sigCanvas.toDataURL() === blank.toDataURL();
+    _clientSignatureName = name;
+    _clientSignatureData = isEmpty ? null : _sigCanvas.toDataURL('image/png');
+    const indicator = document.getElementById('sigSavedIndicator');
+    const nameSpan  = document.getElementById('sigSavedName');
+    const btn       = document.getElementById('btnOpenSigModal');
+    if (_clientSignatureData || name) {
+        if (indicator) indicator.style.display = 'block';
+        if (nameSpan)  nameSpan.textContent = name ? '— ' + name : '';
+        if (btn)       btn.textContent = '✍️ Edit Signature';
+        const dot = document.getElementById('dot-sec-client-sig');
+        if (dot) { dot.classList.add('dot-filled'); dot.classList.remove('dot-empty'); }
+    }
+    if (typeof window.triggerAutoSave === 'function') window.triggerAutoSave();
+    closeSigModal();
+}
+window.getClientSignatureData = function() {
+    return { clientSignatureData: _clientSignatureData, clientSignatureName: _clientSignatureName };
+};
+window.restoreClientSignature = function(data) {
+    if (!data) return;
+    _clientSignatureData = data.clientSignatureData || null;
+    _clientSignatureName = data.clientSignatureName || '';
+    if (_clientSignatureData || _clientSignatureName) {
+        const indicator = document.getElementById('sigSavedIndicator');
+        const nameSpan  = document.getElementById('sigSavedName');
+        const btn       = document.getElementById('btnOpenSigModal');
+        if (indicator) indicator.style.display = 'block';
+        if (nameSpan)  nameSpan.textContent = _clientSignatureName ? '— ' + _clientSignatureName : '';
+        if (btn)       btn.textContent = '✍️ Edit Signature';
+        const dot = document.getElementById('dot-sec-client-sig');
+        if (dot) { dot.classList.add('dot-filled'); dot.classList.remove('dot-empty'); }
+    }
+};
+</script>
+<!-- ══ End Client Signature Modal ══ -->
+
+<!-- ===================== SCRIPTS ===================== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="js/exif.js"></script>
+<script src="js/data.js"></script>
+<script src="js/touch-signature.js"></script>
+<script src="js/autosave.js"></script>
+<script src="js/remedial-report.js"></script>
+<script src="js/remedial-pdf.js"></script>
+
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js')
+            .then(r => console.log('SW registered:', r.scope))
+            .catch(e => console.log('SW failed:', e));
+    }
+
+    // ===================== BRANDING PRELOAD — exact copy from ti-report.html =====================
+    async function blobToBase64(blob) {
+        return new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    async function preloadBrandingImages() {
+        try {
+            const [logoBlob, footerBlob] = await Promise.all([
+                fetch('./assets/Color logo - no background (px reduction).png').then(r => r.blob()),
+                fetch('./assets/es12nobackground.png').then(r => r.blob())
+            ]);
+            window._logoBase64   = await blobToBase64(logoBlob);
+            window._footerBase64 = await blobToBase64(footerBlob);
+            console.log('Branding images preloaded OK');
+        } catch(e) {
+            console.error('Failed to preload branding images:', e);
+        }
+    }
+
+    preloadBrandingImages();
+
+    // ===================== IMAGE HANDLING =====================
+    // Per-key image store: 'building' => single base64, 'repair-r01' => [base64, ...]
+    window.imageStore = {};
+
+    function fixImageOrientation(file) {
+        return new Promise((resolve, reject) => {
+            if (typeof EXIF === 'undefined') { reject(); return; }
+            EXIF.getData(file, function() {
+                const orientation = EXIF.getTag(this, 'Orientation') || 1;
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        if (orientation === 6) {
+                            canvas.width = img.height; canvas.height = img.width;
+                            ctx.rotate(90 * Math.PI / 180); ctx.translate(0, -canvas.width);
+                        } else if (orientation === 8) {
+                            canvas.width = img.height; canvas.height = img.width;
+                            ctx.rotate(-90 * Math.PI / 180); ctx.translate(-canvas.height, 0);
+                        } else {
+                            canvas.width = img.width; canvas.height = img.height;
+                        }
+                        ctx.drawImage(img, 0, 0);
+                        resolve(canvas.toDataURL('image/jpeg'));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    }
+
+    function compressImage(base64Str, maxWidth, maxHeight, quality) {
+        return new Promise(resolve => {
+            const img = new Image();
+            img.onload = () => {
+                let w = img.width, h = img.height;
+                const ar = w / h;
+                if (w > maxWidth) { w = maxWidth; h = maxWidth / ar; }
+                if (h > maxHeight) { h = maxHeight; w = maxHeight * ar; }
+                const canvas = document.createElement('canvas');
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.src = base64Str;
+        });
+    }
+
+    function fileToBase64(file) {
+        return fixImageOrientation(file)
+            .then(corrected => compressImage(corrected, 800, 800, 0.65))
+            .catch(() => new Promise(res => {
+                const r = new FileReader();
+                r.onload = e => res(e.target.result);
+                r.readAsDataURL(file);
+            }));
+    }
+
+    // Single image (cover page building photo)
+    function handleSingleImage(input, previewId, storeKey) {
+        if (!input.files[0]) return;
+        document.getElementById(previewId).textContent = 'Processing...';
+        fileToBase64(input.files[0]).then(data => {
+            window.imageStore[storeKey] = data;
+            document.getElementById(previewId).textContent = '✓ Image uploaded';
+            updateAllDots();
+            triggerAutoSave();
+        });
+    }
+
+    // Multiple images for a repair — storeKey is e.g. 'repair-r01'
+    function handleRepairImages(input, repairId) {
+        if (!input.files.length) return;
+        const files = Array.from(input.files);
+        const previewId = 'repair-img-preview-' + repairId;
+        const previewEl = document.getElementById(previewId);
+        if (previewEl) previewEl.textContent = 'Processing ' + files.length + ' image(s)...';
+
+        Promise.all(files.map(f => fileToBase64(f))).then(results => {
+            const storeKey = 'repair-' + repairId;
+            const existing = window.imageStore[storeKey] || [];
+            window.imageStore[storeKey] = existing.concat(results);
+            const total = window.imageStore[storeKey].length;
+            if (previewEl) previewEl.textContent = '✓ ' + total + ' photo(s)';
+            updateAllDots();
+            refreshSelectedRepair(repairId);
+            triggerAutoSave();
+        });
+    }
+</script>
+
+<script>
+// ===================== COLLAPSIBLE SECTIONS — exact pattern from ti-report.html =====================
+const RM_SECTION_IDS = ['sec-site','sec-repairs','sec-selected','sec-additional','sec-completion'];
+
+const RM_SECTION_FIELDS = {
+    'sec-site':       ['siteName','siteAddress','remedialDate','remedialEngineer','jobReference'],
+    'sec-repairs':    [],
+    'sec-selected':   [],
+    'sec-additional': ['additionalRepairs'],
+    'sec-completion': ['completionNotes', 'complianceResult'],
+};
+
+function toggleSection(id) {
+    const section = document.getElementById(id);
+    const body = section.querySelector('.section-body');
+    const chevron = section.querySelector('.chevron');
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    chevron.textContent = isOpen ? '▾' : '▴';
+    section.classList.toggle('expanded', !isOpen);
+    const state = JSON.parse(localStorage.getItem('striker-remedial-sections') || '{}');
+    state[id] = !isOpen;
+    localStorage.setItem('striker-remedial-sections', JSON.stringify(state));
+}
+
+function restoreSectionStates() {
+    const state = JSON.parse(localStorage.getItem('striker-remedial-sections') || '{}');
+    RM_SECTION_IDS.forEach(id => {
+        const section = document.getElementById(id);
+        if (!section) return;
+        const body = section.querySelector('.section-body');
+        const chevron = section.querySelector('.chevron');
+        const open = state[id] === true;
+        body.classList.toggle('open', open);
+        chevron.textContent = open ? '▴' : '▾';
+        section.classList.toggle('expanded', open);
+    });
+}
+
+function updateStatusDot(sectionId) {
+    const dot = document.getElementById('dot-' + sectionId);
+    if (!dot) return;
+    const fields = RM_SECTION_FIELDS[sectionId] || [];
+    let filled = fields.some(id => {
+        const el = document.getElementById(id);
+        return el && el.value && el.value.trim() !== '';
+    });
+    if (sectionId === 'sec-repairs' || sectionId === 'sec-selected') {
+        filled = window.selectedRepairs && window.selectedRepairs.length > 0;
+    }
+    dot.classList.toggle('dot-filled', filled);
+    dot.classList.toggle('dot-empty', !filled);
+}
+
+function updateAllDots() { RM_SECTION_IDS.forEach(updateStatusDot); }
+
+function initSectionWatchers() {
+    document.querySelectorAll('input, select, textarea').forEach(el => {
+        el.addEventListener('change', updateAllDots);
+        el.addEventListener('input', updateAllDots);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    restoreSectionStates();
+    buildRepairsList();
+    initSectionWatchers();
+    updateAllDots();
+    const d = document.getElementById('remedialDate');
+    if (d && !d.value) d.valueAsDate = new Date();
+
+    // Start auto-save after signature and repairs list are ready
+    initRemedialAutoSave();
+});
+</script>
+</body>
+</html>

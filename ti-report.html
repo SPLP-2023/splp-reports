@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T&I Report — StrikeR</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/png" href="assets/SP Bolt 400x400.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="StrikeR">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+<body>
+<div class="container">
+
+    <!-- Nav -->
+    <div class="nav-header">
+        <button class="nav-button back-button" onclick="location.href='reports.html'">← Back to Reports</button>
+        <button class="nav-button" onclick="location.href='tools.html'">Tools</button>
+    </div>
+
+    <h1>Test &amp; Inspection Report</h1>
+
+    <!-- ===================== SITE INFORMATION ===================== -->
+    <div class="section" id="sec-site">
+        <button class="section-header" onclick="toggleSection('sec-site')">
+            <span class="section-title">📋 Site Information</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-site"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="siteAddress">Site Address:</label>
+                <textarea id="siteAddress" rows="3" placeholder="Enter full site address..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="testDate">Date:</label>
+                <input type="date" id="testDate">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="engineerName">Engineer Name:</label>
+                <input type="text" id="engineerName" placeholder="Enter engineer name..." oninput="this.value=this.value.replace(/(?:^|\s)\S/g,c=>c.toUpperCase())">
+            </div>
+            <div class="form-group">
+                <label for="testKitRef">Test Kit Reference:</label>
+                <input type="text" id="testKitRef" placeholder="Enter test kit reference...">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="siteName">Site Name:</label>
+                <input type="text" id="siteName" placeholder="e.g. Upper Norwood Library..." oninput="this.value=this.value.replace(/(?:^|\s)\S/g,c=>c.toUpperCase())">
+            </div>
+            <div class="form-group">
+                <label for="jobReference">Job Reference:</label>
+                <input type="text" id="jobReference" placeholder="Enter job reference...">
+            </div>
+        </div>
+
+
+        <!-- Building Image -->
+        <div class="form-group">
+            <label>Building Image (Cover Page):</label>
+            <div class="image-upload" onclick="document.getElementById('buildingImageFile').click()">
+                <input type="file" id="buildingImageFile" accept="image/*" class="hidden-file-input"
+                    onchange="handleImageUpload(this, 'buildingImagePreview')">
+                <div id="buildingImagePreview">Click to upload building image</div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- ===================== STANDARD & FAILURES ===================== -->
+    <div class="section" id="sec-standard">
+        <button class="section-header" onclick="toggleSection('sec-standard')">
+            <span class="section-title">⚡ Standard Selection &amp; Failures</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-standard"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+        <div class="form-group standards-dropdown">
+            <label for="standard">Select Standard:</label>
+            <select id="standard" onchange="updateFailuresList()">
+                <option value="">Select a standard...</option>
+                <option value="BS EN 62305">BS EN 62305 (Current Standard)</option>
+                <option value="BS 6651">BS 6651 (Legacy Standard)</option>
+                <option value="CP 326">CP 326 (Historical Standard)</option>
+                <option value="NF C 17-102">NF C 17-102:2011 (ESE Systems)</option>
+            </select>
+        </div>
+        <div id="failuresContainer" class="hidden">
+            <label>Available Failures for Selected Standard:</label>
+            <div id="failuresList" class="failures-list"></div>
+        </div>
+        </div>
+    </div>
+
+    <div class="section" id="sec-selected">
+        <button class="section-header" onclick="toggleSection('sec-selected')">
+            <span class="section-title">⚠ Selected Failures &amp; Comments</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-selected"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+        <div id="selectedFailures"></div>
+        </div>
+    </div>
+
+    <!-- ===================== RECOMMENDATIONS ===================== -->
+    <div class="section" id="sec-recommendations">
+        <button class="section-header" onclick="toggleSection('sec-recommendations')">
+            <span class="section-title">💬 Recommendations</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-recommendations"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+            <p style="font-style:italic;color:#6c757d;margin-bottom:14px;">Select any recommendations to pass on to the client. Where shown, enter the quantity or earth point reference. Photos can be attached to each recommendation.</p>
+            <div id="recListContainer"></div>
+            <div class="form-group" style="margin-top:18px;border-top:1px solid #dee2e6;padding-top:16px;">
+                <label style="font-weight:600;display:block;margin-bottom:8px;">Custom Recommendation / Free Text:</label>
+                <div style="display:flex;gap:10px;align-items:flex-start;">
+                    <textarea id="customRecText" rows="2" style="flex:1;" placeholder="Enter a recommendation not listed above..."></textarea>
+                    <button class="add-btn" onclick="addCustomRec()" style="margin-top:0;white-space:nowrap;">+ Add</button>
+                </div>
+            </div>
+            <div style="margin-top:18px;border-top:1px solid #dee2e6;padding-top:16px;">
+                <label style="font-weight:600;display:block;margin-bottom:8px;">✅ Selected Recommendations:</label>
+                <div id="selectedRecContainer">
+                    <p style="color:#888;font-style:italic;font-size:13px;">No recommendations selected yet.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== STRUCTURE DETAILS ===================== -->
+    <div class="section" id="sec-structure">
+        <button class="section-header" onclick="toggleSection('sec-structure')">
+            <span class="section-title">🏗 Structure Details</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-structure"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="structureHeight">1. Structure Height (m):</label>
+                <input type="number" id="structureHeight" placeholder="Enter height in metres...">
+            </div>
+            <div class="form-group">
+                <label for="structurePerimeter">2. Structure Perimeter (m):</label>
+                <input type="number" id="structurePerimeter" placeholder="Enter perimeter in metres...">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>3. Ground Type:</label>
+                <div id="groundTypeList" class="failures-list">
+                    <div class="failure-option" onclick="selectSystemDetail('groundType','Gravel',this)">Gravel</div>
+                    <div class="failure-option" onclick="selectSystemDetail('groundType','Tarmac',this)">Tarmac</div>
+                    <div class="failure-option" onclick="selectSystemDetail('groundType','Concrete',this)">Concrete</div>
+                    <div class="failure-option" onclick="selectSystemDetail('groundType','Grass',this)">Grass</div>
+                    <div class="failure-option" onclick="selectSystemDetail('groundType','Soil',this)">Soil</div>
+                    <div class="failure-option" onclick="selectSystemDetail('groundType','Slabs',this)">Slabs</div>
+                    <div class="failure-option" onclick="selectSystemDetail('groundType','Block Paving',this)">Block Paving</div>
+                    <div class="failure-option" onclick="selectSystemDetail('groundType','Other',this,true)">Other</div>
+                </div>
+                <input type="text" id="groundTypeOther" class="hidden" placeholder="Please specify..." onchange="updateOtherValue('groundType',this.value)">
+            </div>
+            <div class="form-group">
+                <label>4. Boundary Type:</label>
+                <div id="boundaryTypeList" class="failures-list">
+                    <div class="failure-option" onclick="selectSystemDetail('boundaryType','Bricks',this)">Bricks</div>
+                    <div class="failure-option" onclick="selectSystemDetail('boundaryType','Render',this)">Render</div>
+                    <div class="failure-option" onclick="selectSystemDetail('boundaryType','Metal Clad',this)">Metal Clad</div>
+                    <div class="failure-option" onclick="selectSystemDetail('boundaryType','Wooden Clad',this)">Wooden Clad</div>
+                    <div class="failure-option" onclick="selectSystemDetail('boundaryType','Composite Clad',this)">Composite Clad</div>
+                    <div class="failure-option" onclick="selectSystemDetail('boundaryType','Glazing',this)">Glazing</div>
+                    <div class="failure-option" onclick="selectSystemDetail('boundaryType','Stone Blocks',this)">Stone Blocks</div>
+                    <div class="failure-option" onclick="selectSystemDetail('boundaryType','Other',this,true)">Other</div>
+                </div>
+                <input type="text" id="boundaryTypeOther" class="hidden" placeholder="Please specify..." onchange="updateOtherValue('boundaryType',this.value)">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>5. Roof Type:</label>
+                <div id="roofTypeList" class="failures-list">
+                    <div class="failure-option" onclick="selectSystemDetail('roofType','Felt',this)">Felt</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofType','Membrane',this)">Membrane</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofType','Metal Clad',this)">Metal Clad</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofType','Tiles',this)">Tiles</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofType','Lead',this)">Lead</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofType','Seedum',this)">Seedum</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofType','Thatch',this)">Thatch</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofType','Concrete',this)">Concrete</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofType','Asphalt',this)">Asphalt</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofType','Other',this,true)">Other</div>
+                </div>
+                <input type="text" id="roofTypeOther" class="hidden" placeholder="Please specify..." onchange="updateOtherValue('roofType',this.value)">
+            </div>
+            <div class="form-group">
+                <label>6. Roof Layout:</label>
+                <div id="roofLayoutList" class="failures-list">
+                    <div class="failure-option" onclick="selectSystemDetail('roofLayout','Pitched',this)">Pitched</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofLayout','Sloped',this)">Sloped</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofLayout','Dome',this)">Dome</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofLayout','Flat',this)">Flat</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofLayout','Complex',this)">Complex</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofLayout','Other',this,true)">Other</div>
+                </div>
+                <input type="text" id="roofLayoutOther" class="hidden" placeholder="Please specify..." onchange="updateOtherValue('roofLayout',this.value)">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="structureUse">7. Structure Use:</label>
+                <select id="structureUse">
+                    <option value="">Select structure use...</option>
+                    <optgroup label="Residential">
+                        <option>Block of flats</option>
+                        <option>Large house</option>
+                        <option>Halls of residence</option>
+                        <option>Old persons / children's home</option>
+                    </optgroup>
+                    <optgroup label="Commercial">
+                        <option>Commercial / office block</option>
+                        <option>Departmental store</option>
+                        <option>Shops / shopping centre</option>
+                        <option>Hotel</option>
+                        <option>Restaurant / café</option>
+                        <option>Bank / financial institution</option>
+                    </optgroup>
+                    <optgroup label="Leisure & Entertainment">
+                        <option>Leisure centre</option>
+                        <option>Sports stadium</option>
+                        <option>Theatre</option>
+                        <option>Museum</option>
+                        <option>Cinema / entertainment venue</option>
+                        <option>Trampoline / activity park</option>
+                        <option>Gym / fitness centre</option>
+                        <option>Golf club / clubhouse</option>
+                    </optgroup>
+                    <optgroup label="Education & Public">
+                        <option>School</option>
+                        <option>University</option>
+                        <option>Civic building</option>
+                        <option>Community centre</option>
+                        <option>Library</option>
+                        <option>Police / fire / ambulance station</option>
+                        <option>Prison</option>
+                        <option>Court building</option>
+                    </optgroup>
+                    <optgroup label="Healthcare">
+                        <option>Hospital</option>
+                        <option>Medical centre</option>
+                    </optgroup>
+                    <optgroup label="Religious">
+                        <option>Church</option>
+                        <option>Cathedral</option>
+                        <option>Mosque / temple / place of worship</option>
+                    </optgroup>
+                    <optgroup label="Industrial & Utilities">
+                        <option>Factory</option>
+                        <option>Industrial warehouse</option>
+                        <option>Oil refinery / chemical plant</option>
+                        <option>Gas compound</option>
+                        <option>Fuel / service station</option>
+                        <option>Power station</option>
+                        <option>Substation</option>
+                        <option>Water treatment works</option>
+                        <option>Wind farm</option>
+                        <option>Data centre</option>
+                    </optgroup>
+                    <optgroup label="Transport & Infrastructure">
+                        <option>Airport building</option>
+                        <option>Railway station</option>
+                        <option>Telephone exchange</option>
+                        <option>Base station / telecoms mast</option>
+                    </optgroup>
+                    <optgroup label="Agriculture">
+                        <option>Farm building</option>
+                    </optgroup>
+                    <optgroup label="Other">
+                        <option>Ruin</option>
+                        <option>Other</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="structureOccupancy">8. Maximum Occupancy:</label>
+                <input type="number" id="structureOccupancy" placeholder="Enter maximum occupancy...">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="structureAge">9. Age of Structure (years):</label>
+                <input type="number" id="structureAge" placeholder="Enter age in years...">
+            </div>
+            <div class="form-group">
+                <label for="previousInspections">10. Records of Previous Inspections:</label>
+                <select id="previousInspections">
+                    <option value="">Select option...</option>
+                    <option>Yes</option><option>Yes - Digital</option>
+                    <option>No</option><option>N/a</option>
+                </select>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- ===================== SYSTEM DETAILS ===================== -->
+    <div class="section" id="sec-system">
+        <button class="section-header" onclick="toggleSection('sec-system')">
+            <span class="section-title">⚙️ System Details</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-system"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>1. Air Termination Network:</label>
+                <div id="airTerminationList" class="failures-list">
+                    <div class="failure-option" onclick="selectSystemDetail('airTermination','Faraday Cage Grid Mesh',this)">Faraday Cage Grid Mesh</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airTermination','Conductive Metal Sheet Roof',this)">Conductive Metal Sheet Roof</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airTermination','Conductive Metal Cappings',this)">Conductive Metal Cappings</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airTermination','Finial Rods',this)">Finial Rods</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airTermination','ESEAT',this)">ESEAT</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airTermination','HVI',this)">HVI</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airTermination','Other',this,true)">Other</div>
+                </div>
+                <input type="text" id="airTerminationOther" class="hidden" placeholder="Please specify..." onchange="updateOtherValue('airTermination',this.value)">
+            </div>
+            <div class="form-group">
+                <label>2. AT Conductors &amp; Fixings:</label>
+                <div id="airConductorsList" class="failures-list">
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','NMDC',this)">NMDC</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','Self-Adhesive',this)">Self-Adhesive</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','Heat Weldable',this)">Heat Weldable</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','Slate Hold-Fast',this)">Slate Hold-Fast</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','Felt Pad',this)">Felt Pad</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','Membrane Pad',this)">Membrane Pad</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','Aluminium',this)">Aluminium</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','Copper',this)">Copper</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','Metal Sheet Roof',this)">Metal Sheet Roof</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','25x3mm Bare',this)">25x3mm Bare</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','25x3mm PVC',this)">25x3mm PVC</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','20x3mm Bare',this)">20x3mm Bare</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','8mm Bare',this)">8mm Bare</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','8mm PVC',this)">8mm PVC</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','Black',this)">Black</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','Brown',this)">Brown</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','Grey',this)">Grey</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','Stone',this)">Stone</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','White',this)">White</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airConductors','Other',this,true)">Other</div>
+                </div>
+                <input type="text" id="airConductorsOther" class="hidden" placeholder="Please specify..." onchange="updateOtherValue('airConductors',this.value)">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>3. Down Conductor Network:</label>
+                <div id="downConductorNetworkList" class="failures-list">
+                    <div class="failure-option" onclick="selectSystemDetail('downConductorNetwork','External Conductors',this)">External Conductors</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductorNetwork','Cavity Conductors',this)">Cavity Conductors</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductorNetwork','Internal Framework',this)">Internal Framework</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductorNetwork','Other',this,true)">Other</div>
+                </div>
+                <input type="text" id="downConductorNetworkOther" class="hidden" placeholder="Please specify..." onchange="updateOtherValue('downConductorNetwork',this.value)">
+            </div>
+            <div class="form-group">
+                <label>4. DC Conductors &amp; Fixings:</label>
+                <div id="downConductorsList" class="failures-list">
+                    <div class="failure-option" onclick="selectSystemDetail('downConductors','NMDC',this)">NMDC</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductors','Steel Frame',this)">Steel Frame</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductors','Reinforcing Steel Bars',this)">Reinforcing Steel Bars</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductors','Aluminium',this)">Aluminium</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductors','Copper',this)">Copper</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductors','25x3mm Bare',this)">25x3mm Bare</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductors','25x3mm PVC',this)">25x3mm PVC</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductors','20x3mm Bare',this)">20x3mm Bare</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductors','8mm Bare',this)">8mm Bare</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductors','8mm PVC',this)">8mm PVC</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductors','Black',this)">Black</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductors','Brown',this)">Brown</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductors','Grey',this)">Grey</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductors','Stone',this)">Stone</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductors','White',this)">White</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductors','Other',this,true)">Other</div>
+                </div>
+                <input type="text" id="downConductorsOther" class="hidden" placeholder="Please specify..." onchange="updateOtherValue('downConductors',this.value)">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>5. Earth Termination Network:</label>
+                <div id="earthTerminationList" class="failures-list">
+                    <div class="failure-option" onclick="selectSystemDetail('earthTermination','Earth Rods',this)">Earth Rods</div>
+                    <div class="failure-option" onclick="selectSystemDetail('earthTermination','Earth Matts',this)">Earth Matts</div>
+                    <div class="failure-option" onclick="selectSystemDetail('earthTermination','Reinforcing',this)">Reinforcing</div>
+                    <div class="failure-option" onclick="selectSystemDetail('earthTermination','Unknown',this)">Unknown</div>
+                    <div class="failure-option" onclick="selectSystemDetail('earthTermination','Other',this,true)">Other</div>
+                </div>
+                <input type="text" id="earthTerminationOther" class="hidden" placeholder="Please specify..." onchange="updateOtherValue('earthTermination',this.value)">
+            </div>
+            <div class="form-group">
+                <label for="earthArrangement">6. Earth Arrangement:</label>
+                <select id="earthArrangement">
+                    <option value="">Select arrangement...</option>
+                    <option>Type-A</option><option>Type-B</option><option>Unknown</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="mainEquipotentialBond">7. Main Equipotential Bond:</label>
+                <select id="mainEquipotentialBond">
+                    <option value="">Select status...</option>
+                    <option>Present</option><option>Unidentified</option><option>N/a</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="surgeInstalled">8. Surge Protection Installation:</label>
+                <select id="surgeInstalled">
+                    <option value="">Select status...</option>
+                    <option>No SPD located</option>
+                    <option>SPD Located</option>
+                    <option>Incorrect Unit Installed</option>
+                    <option>Requires Further Investigations</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="surgeType">9. Surge Protection Type:</label>
+                <select id="surgeType">
+                    <option value="">Select type...</option>
+                    <option>Type-1</option><option>Type-2</option><option>Type-3</option>
+                    <option>Combined Unit</option><option>Unidentified</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="surgeSafe">10. Surge Protection Status:</label>
+                <select id="surgeSafe">
+                    <option value="">Select status...</option>
+                    <option>Safe</option><option>Fault</option>
+                    <option>Requires Further Investigations</option>
+                </select>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- ===================== EARTH RESISTANCE TESTING ===================== -->
+    <div class="section" id="sec-earth">
+        <button class="section-header" onclick="toggleSection('sec-earth')">
+            <span class="section-title">🔌 Earth Resistance Test</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-earth"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+        <div class="form-group">
+            <label>
+                <input type="checkbox" id="partOfLargerSystem"> Part of a larger system
+            </label>
+        </div>
+        <div class="form-group">
+            <label for="numEarths">Number of Earths Tested:</label>
+            <input type="number" id="numEarths" min="0" max="100" onchange="generateEarthTable()">
+        </div>
+
+        <div id="earthTableContainer" class="earth-table-container hidden">
+            <div class="table-responsive">
+                <table id="earthTable" class="earth-table">
+                    <thead>
+                        <tr>
+                            <th>E</th>
+                            <th>Ω</th>
+                            <th>Test Clamp</th>
+                            <th>Pit Type</th>
+                            <th>Test Type</th>
+                            <th>Ground Type</th>
+                            <th>Earth Type</th>
+                            <th>Comment</th>
+                        </tr>
+                    </thead>
+                    <tbody id="earthTableBody"></tbody>
+                </table>
+            </div>
+            <div id="earthResult" class="result-display hidden">
+                <h4>Overall Earth Resistance:</h4>
+                <div id="overallResistance" class="overall-resistance-value">-</div>
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top:16px;">
+            <label>Inspection Images:</label>
+            <div class="image-upload" onclick="document.getElementById('earthImagesFile').click()">
+                <input type="file" id="earthImagesFile" accept="image/*" multiple class="hidden-file-input"
+                    onchange="handleMultipleImageUpload(this, 'earthImagesPreview')">
+                <div id="earthImagesPreview">Click to upload earth test images</div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- ===================== GENERAL COMMENTS ===================== -->
+    <div class="section" id="sec-comments">
+        <button class="section-header" onclick="toggleSection('sec-comments')">
+            <span class="section-title">📝 General Comments</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-comments"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+        <div class="form-group">
+            <label for="finalComments">General Comments:</label>
+            <textarea id="finalComments" rows="4" placeholder="Enter any general comments, observations, or conclusions..."></textarea>
+        </div>
+        </div>
+    </div>
+
+        <!-- ══ Client Signature Section ══ -->
+        <div class="section" id="sec-client-sig">
+            <button class="section-header" onclick="toggleSection('sec-client-sig')">
+                <span class="section-title">✍️ Client Signature</span>
+                <span class="section-right"><span class="status-dot" id="dot-sec-client-sig"></span><span class="chevron">▾</span></span>
+            </button>
+            <div class="section-body" id="body-sec-client-sig">
+                <div style="text-align:center;padding:16px 0;">
+                    <div id="sigSavedIndicator" style="display:none;margin-bottom:12px;">
+                        <span style="color:#27ae60;font-weight:700;font-size:15px;">✅ Signature saved</span>
+                        <span id="sigSavedName" style="color:var(--text-muted);font-size:13px;margin-left:8px;"></span>
+                    </div>
+                    <button type="button" id="btnOpenSigModal" onclick="openSigModal()">✍️ Add Client Signature</button>
+                </div>
+            </div>
+        </div>
+        <!-- ══ End Client Signature Section ══ -->
+
+    <!-- ══ Site Drawing Section ══ -->
+        <div class="section" style="margin-bottom:80px;">
+            <div class="section-header" style="cursor:default;">
+                <span class="section-title">📐 Site Drawing</span>
+            </div>
+            <div class="section-body open">
+                <div id="drawingEmpty" style="text-align:center;padding:10px 0;">
+                    <p style="color:var(--text-muted);margin-bottom:14px;font-size:14px;">No drawing added yet. Open the drawing tool to create a site plan.</p>
+                    <button type="button" onclick="openDrawingTool()">📐 Open Drawing Tool</button>
+                </div>
+                <div id="drawingPreview" style="display:none;">
+                    <img id="drawingThumb" src="" alt="Site drawing preview"
+                        style="width:100%;max-width:600px;display:block;margin:0 auto 12px;border:1px solid var(--border);border-radius:6px;">
+                    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px;">
+                        <button type="button" onclick="openDrawingTool()">✏️ Edit Drawing</button>
+                        <button type="button" onclick="removeDrawing()" style="background:var(--danger);color:white;">🗑 Remove Drawing</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ══ End Site Drawing Section ══ -->
+
+</div><!-- /container -->
+
+<!-- Sticky Generate Button -->
+<div class="sticky-generate">
+    <button id="generateReport" onclick="generatePDF()">⚡ Generate PDF Report</button>
+</div>
+
+<!-- ══ Client Signature Modal ══ -->
+<div id="sigModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;">
+    <div style="background:var(--dark2);border:1px solid var(--border);border-radius:14px;padding:28px 24px;width:92%;max-width:440px;box-shadow:0 8px 40px rgba(0,0,0,0.6);">
+        <h3 style="margin:0 0 18px;font-size:1.1em;color:var(--text);">✍️ Client Signature</h3>
+        <div class="form-group" style="margin-bottom:14px;">
+            <label for="sigModalName">Site Staff Name</label>
+            <input type="text" id="sigModalName" placeholder="Enter name..."
+                oninput="this.value=this.value.replace(/(?:^|\s)\S/g,c=>c.toUpperCase())">
+        </div>
+        <div class="form-group" style="margin-bottom:16px;">
+            <label>Signature</label>
+            <div style="border:2px solid var(--primary);border-radius:8px;background:#fff;">
+                <canvas id="sigModalCanvas" width="380" height="150"
+                    style="width:100%;height:150px;display:block;border-radius:6px;cursor:crosshair;touch-action:none;"></canvas>
+            </div>
+            <button type="button" onclick="clearSigModal()" style="margin-top:6px;background:var(--dark3);color:var(--text);padding:5px 14px;border-radius:5px;font-size:12px;">Clear</button>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+            <button type="button" onclick="closeSigModal()" style="background:var(--dark3);color:var(--text);">Cancel</button>
+            <button type="button" onclick="submitSigModal()">✅ Save Signature</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let _sigCanvas, _sigCtx, _sigDrawing = false;
+let _clientSignatureData = null;
+let _clientSignatureName = '';
+
+function openSigModal() {
+    const modal = document.getElementById('sigModal');
+    modal.style.display = 'flex';
+    _sigCanvas = document.getElementById('sigModalCanvas');
+    _sigCtx    = _sigCanvas.getContext('2d');
+    _sigCtx.clearRect(0, 0, _sigCanvas.width, _sigCanvas.height);
+    if (_clientSignatureData) {
+        const img = new Image();
+        img.onload = () => _sigCtx.drawImage(img, 0, 0);
+        img.src = _clientSignatureData;
+    }
+    document.getElementById('sigModalName').value = _clientSignatureName || '';
+    _sigCanvas.onmousedown  = e => { _sigDrawing = true; _sigCtx.beginPath(); const p = _sigPos(e); _sigCtx.moveTo(p.x, p.y); };
+    _sigCanvas.onmousemove  = e => { if (!_sigDrawing) return; const p = _sigPos(e); _sigCtx.lineTo(p.x, p.y); _sigCtx.strokeStyle='#111'; _sigCtx.lineWidth=2; _sigCtx.lineCap='round'; _sigCtx.stroke(); };
+    _sigCanvas.onmouseup    = () => _sigDrawing = false;
+    _sigCanvas.onmouseleave = () => _sigDrawing = false;
+    _sigCanvas.ontouchstart = e => { e.preventDefault(); _sigDrawing = true; _sigCtx.beginPath(); const p = _sigTouchPos(e); _sigCtx.moveTo(p.x, p.y); };
+    _sigCanvas.ontouchmove  = e => { e.preventDefault(); if (!_sigDrawing) return; const p = _sigTouchPos(e); _sigCtx.lineTo(p.x, p.y); _sigCtx.strokeStyle='#111'; _sigCtx.lineWidth=2; _sigCtx.lineCap='round'; _sigCtx.stroke(); };
+    _sigCanvas.ontouchend   = e => { e.preventDefault(); _sigDrawing = false; };
+}
+function _sigPos(e) {
+    const r = _sigCanvas.getBoundingClientRect();
+    return { x: (e.clientX - r.left) * (_sigCanvas.width / r.width), y: (e.clientY - r.top) * (_sigCanvas.height / r.height) };
+}
+function _sigTouchPos(e) {
+    const t = e.touches[0], r = _sigCanvas.getBoundingClientRect();
+    return { x: (t.clientX - r.left) * (_sigCanvas.width / r.width), y: (t.clientY - r.top) * (_sigCanvas.height / r.height) };
+}
+function clearSigModal() {
+    if (_sigCtx) _sigCtx.clearRect(0, 0, _sigCanvas.width, _sigCanvas.height);
+}
+function closeSigModal() {
+    document.getElementById('sigModal').style.display = 'none';
+}
+function submitSigModal() {
+    const name = document.getElementById('sigModalName').value.trim();
+    const blank = document.createElement('canvas');
+    blank.width = _sigCanvas.width; blank.height = _sigCanvas.height;
+    const isEmpty = !_sigCtx || _sigCanvas.toDataURL() === blank.toDataURL();
+    _clientSignatureName = name;
+    _clientSignatureData = isEmpty ? null : _sigCanvas.toDataURL('image/png');
+    const indicator = document.getElementById('sigSavedIndicator');
+    const nameSpan  = document.getElementById('sigSavedName');
+    const btn       = document.getElementById('btnOpenSigModal');
+    if (_clientSignatureData || name) {
+        if (indicator) indicator.style.display = 'block';
+        if (nameSpan)  nameSpan.textContent = name ? '— ' + name : '';
+        if (btn)       btn.textContent = '✍️ Edit Signature';
+        const dot = document.getElementById('dot-sec-client-sig');
+        if (dot) { dot.classList.add('dot-filled'); dot.classList.remove('dot-empty'); }
+    }
+    if (typeof debouncedSave === 'function') debouncedSave();
+    closeSigModal();
+}
+window.getClientSignatureData = function() {
+    return { clientSignatureData: _clientSignatureData, clientSignatureName: _clientSignatureName };
+};
+window.restoreClientSignature = function(data) {
+    if (!data) return;
+    _clientSignatureData = data.clientSignatureData || null;
+    _clientSignatureName = data.clientSignatureName || '';
+    if (_clientSignatureData || _clientSignatureName) {
+        const indicator = document.getElementById('sigSavedIndicator');
+        const nameSpan  = document.getElementById('sigSavedName');
+        const btn       = document.getElementById('btnOpenSigModal');
+        if (indicator) indicator.style.display = 'block';
+        if (nameSpan)  nameSpan.textContent = _clientSignatureName ? '— ' + _clientSignatureName : '';
+        if (btn)       btn.textContent = '✍️ Edit Signature';
+        const dot = document.getElementById('dot-sec-client-sig');
+        if (dot) { dot.classList.add('dot-filled'); dot.classList.remove('dot-empty'); }
+    }
+};
+</script>
+<!-- ══ End Client Signature Modal ══ -->
+
+<!-- ===================== SCRIPTS ===================== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="js/exif.js"></script>
+<script src="js/data.js"></script>
+<script src="js/touch-signature.js"></script>
+<script src="js/ti-report.js"></script>
+<script src="js/drawing-pdf.js"></script>
+<script src="js/ti-pdf-generator.js"></script>
+<script src="js/ti-drawing-script.js"></script>
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js')
+            .then(r => console.log('SW registered:', r.scope))
+            .catch(e => console.log('SW failed:', e));
+    }
+
+    // Pre-fetch branding images as base64 on page load using fetch() API.
+    // This avoids jsPDF's deprecated synchronous XHR which browsers now block.
+    async function blobToBase64(blob) {
+        return new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    async function preloadBrandingImages() {
+        try {
+            const [logoBlob, footerBlob] = await Promise.all([
+                fetch('./assets/Color logo - no background (px reduction).png').then(r => r.blob()),
+                fetch('./assets/es12nobackground.png').then(r => r.blob())
+            ]);
+            window._logoBase64   = await blobToBase64(logoBlob);
+            window._footerBase64 = await blobToBase64(footerBlob);
+            console.log('Branding images preloaded OK');
+        } catch(e) {
+            console.error('Failed to preload branding images:', e);
+        }
+    }
+
+    preloadBrandingImages();
+</script>
+
+<script>
+// ===================== COLLAPSIBLE SECTIONS =====================
+const SECTION_IDS = ['sec-site','sec-standard','sec-selected','sec-recommendations','sec-structure','sec-system','sec-earth','sec-comments'];
+
+// Fields to watch per section for status dot
+const SECTION_FIELDS = {
+    'sec-site':            ['siteName','siteAddress','testDate','engineerName','testKitRef','jobReference'],
+    'sec-standard':        ['standard'],
+    'sec-selected':        [], // dynamic content — watch selectedFailures div
+    'sec-recommendations': [],
+    'sec-structure':       ['structureHeight','structurePerimeter','structureUse','structureOccupancy','structureAge','previousInspections'],
+    'sec-system':          ['earthArrangement','mainEquipotentialBond','surgeInstalled','surgeType','surgeSafe'],
+    'sec-earth':           ['numEarths'],
+    'sec-comments':        ['finalComments']
+};
+
+function toggleSection(id) {
+    const section = document.getElementById(id);
+    const body = section.querySelector('.section-body');
+    const chevron = section.querySelector('.chevron');
+    const isOpen = body.classList.contains('open');
+
+    body.classList.toggle('open', !isOpen);
+    chevron.textContent = isOpen ? '▾' : '▴';
+    section.classList.toggle('expanded', !isOpen);
+
+    // Save state
+    const state = JSON.parse(localStorage.getItem('striker-sections') || '{}');
+    state[id] = !isOpen;
+    localStorage.setItem('striker-sections', JSON.stringify(state));
+}
+
+function restoreSectionStates() {
+    const state = JSON.parse(localStorage.getItem('striker-sections') || '{}');
+    SECTION_IDS.forEach(id => {
+        const section = document.getElementById(id);
+        if (!section) return;
+        const body = section.querySelector('.section-body');
+        const chevron = section.querySelector('.chevron');
+        const open = state[id] === true;
+        body.classList.toggle('open', open);
+        chevron.textContent = open ? '▴' : '▾';
+        section.classList.toggle('expanded', open);
+    });
+}
+
+function updateStatusDot(sectionId) {
+    const dot = document.getElementById('dot-' + sectionId);
+    if (!dot) return;
+    const fields = SECTION_FIELDS[sectionId] || [];
+    let filled = fields.some(id => {
+        const el = document.getElementById(id);
+        return el && el.value && el.value.trim() !== '';
+    });
+
+    // Special cases
+    if (sectionId === 'sec-selected') {
+        const sf = document.getElementById('selectedFailures');
+        filled = sf && sf.children.length > 0;
+    }
+    if (sectionId === 'sec-site') {
+        // Also check signature saved
+        filled = filled || (window._signatureSaved === true);
+    }
+    if (sectionId === 'sec-structure') {
+        // Check any selection pill active
+        const lists = ['groundTypeList','boundaryTypeList','roofTypeList','roofLayoutList'];
+        filled = filled || lists.some(lid => {
+            const el = document.getElementById(lid);
+            return el && el.querySelector('.failure-option.selected');
+        });
+    }
+    if (sectionId === 'sec-system') {
+        const lists = ['airTerminationList','airConductorsList','downConductorNetworkList','downConductorsList','earthTerminationList'];
+        filled = filled || lists.some(lid => {
+            const el = document.getElementById(lid);
+            return el && el.querySelector('.failure-option.selected');
+        });
+    }
+    if (sectionId === 'sec-recommendations') {
+        filled = window.selectedRecommendations && window.selectedRecommendations.length > 0;
+    }
+
+    dot.classList.toggle('dot-filled', filled);
+    dot.classList.toggle('dot-empty', !filled);
+}
+
+function updateAllDots() {
+    SECTION_IDS.forEach(updateStatusDot);
+}
+
+function initSectionWatchers() {
+    // Watch all inputs/selects/textareas
+    document.querySelectorAll('input, select, textarea').forEach(el => {
+        el.addEventListener('change', updateAllDots);
+        el.addEventListener('input', updateAllDots);
+    });
+
+    // Watch selectedFailures div mutations
+    const sf = document.getElementById('selectedFailures');
+    if (sf) {
+        new MutationObserver(updateAllDots).observe(sf, { childList: true, subtree: true });
+    }
+}
+
+// Run on load
+document.addEventListener('DOMContentLoaded', () => {
+    restoreSectionStates();
+    initSectionWatchers();
+    updateAllDots();
+    buildRecList();
+});
+</script>
+
+<script>
+// ===================== RECOMMENDATIONS CATALOGUE =====================
+const RECOMMENDATIONS_CATALOGUE = [
+    { id: 'rc01', template: 'It is recommended to install additional clips to secure roof conductors back to the structure.', hasQty: false, hasEarth: false },
+    { id: 'rc02', template: 'It is recommended to install additional clips to secure the down conductors.', hasQty: false, hasEarth: false },
+    { id: 'rc03', template: 'It is recommended to install {X} bonds to plant items to prevent flashover from occurring.', hasQty: true, qtyLabel: 'No. of bonds' },
+    { id: 'rc04', template: 'It is recommended to install {X} new A-clamps.', hasQty: true, qtyLabel: 'No. of clamps' },
+    { id: 'rc05', template: 'It is recommended to install {X} new Stainless Steel test clamps.', hasQty: true, qtyLabel: 'No. of clamps' },
+    { id: 'rc06', template: 'It is recommended to install additional earthing materials to {E#} to reduce the earth resistance reading.', hasEarth: true, earthLabel: 'Earth ref' },
+    { id: 'rc07', template: 'It is recommended to install new clamps to replace corroded clamps.', hasQty: false, hasEarth: false },
+    { id: 'rc08', template: 'It is recommended to install new clamps to replace broken clamps.', hasQty: false, hasEarth: false },
+    { id: 'rc09', template: 'It is recommended to install a new ESEAT lightning protection system, certified to NF C 17-102.', hasQty: false, hasEarth: false },
+    { id: 'rc10', template: 'It is recommended to excavate {E#} to locate the earth and test the resistance.', hasEarth: true, earthLabel: 'Earth ref' },
+    { id: 'rc11', template: 'It is recommended to investigate the continuity fault at {E#} — fault to be located and repaired.', hasEarth: true, earthLabel: 'Earth ref' },
+    { id: 'rc12', template: 'It is recommended to investigate the continuity fault at {E#} — fault located, further works required.', hasEarth: true, earthLabel: 'Earth ref' },
+    { id: 'rc13', template: 'It is recommended to install finial rods to provide an angle of protection over the roof areas.', hasQty: false, hasEarth: false },
+    { id: 'rc14', template: 'It is recommended the structure has a roof survey to determine the condition of the air-termination network. Specialist access required.', hasQty: false, hasEarth: false },
+    { id: 'rc15', template: 'It is recommended to install drain holes to {E#} to allow water ingress to drain away and prevent premature corrosion of the earth components.', hasEarth: true, earthLabel: 'Earth ref' },
+    { id: 'rc16', template: 'It is recommended to monitor the overall earth resistance during the next inspection for any increase, if the earth termination resistance increases then additional earth materials will need to be installed.', hasQty: false, hasEarth: false },
+    { id: 'rc17', template: 'The ESE device is recommended to be changed for a new unit if more than 5 years old. Client will need to confirm age of device.', hasQty: false, hasEarth: false },
+    { id: 'rc18', template: 'It is recommended to have a Type-1 Surge Protection Device (SPD) installed as per the guidance of BS EN IEC 62305-4:2024 and BS7671:2018, A2:2022.', hasQty: false, hasEarth: false },
+];
+
+window.selectedRecommendations = [];
+window.imageStore = window.imageStore || {};
+
+function buildRecList() {
+    const container = document.getElementById('recListContainer');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // Inject shared repair/rec UI styles if not already present
+    if (!document.getElementById('rm-repair-styles')) {
+        const style = document.createElement('style');
+        style.id = 'rm-repair-styles';
+        style.textContent = `
+            .rm-repair-item {
+                display: flex;
+                gap: 12px;
+                align-items: flex-start;
+                padding: 12px 14px;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                margin-bottom: 8px;
+                background: #fff;
+                transition: border-color 0.2s, background 0.2s;
+            }
+            .rm-repair-item.rm-selected {
+                border-color: #0877c3;
+                background: #f0f7ff;
+            }
+            .rm-repair-check-col { padding-top: 2px; flex-shrink: 0; }
+            .rm-checkbox { width: 17px; height: 17px; cursor: pointer; accent-color: #0877c3; }
+            .rm-repair-body { flex: 1; }
+            .rm-repair-label {
+                font-size: 13.5px;
+                color: #1a1a1a;
+                cursor: pointer;
+                line-height: 1.45;
+                display: block;
+                margin: 0;
+                font-weight: normal;
+            }
+            .rm-inputs-row {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-top: 8px;
+            }
+            .rm-input-label {
+                font-size: 12px;
+                font-weight: 600;
+                color: #555;
+                white-space: nowrap;
+            }
+            .rm-num-input {
+                width: 68px;
+                padding: 4px 8px;
+                border: 1px solid #adb5bd;
+                border-radius: 4px;
+                font-size: 13px;
+            }
+            .rm-text-input {
+                width: 100px;
+                padding: 4px 8px;
+                border: 1px solid #adb5bd;
+                border-radius: 4px;
+                font-size: 13px;
+            }
+            .rm-photo-row {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-top: 8px;
+                flex-wrap: wrap;
+            }
+            .rm-photo-label { font-size: 12px; color: #555; font-weight: 600; }
+            .rm-photo-btn {
+                display: inline-block;
+                padding: 4px 12px;
+                background: #0877c3;
+                color: #fff;
+                border-radius: 5px;
+                font-size: 12px;
+                font-weight: 600;
+                cursor: pointer;
+                border: none;
+                user-select: none;
+            }
+            .rm-photo-btn:hover { background: #065f99; }
+            .rm-photo-count { font-size: 12px; color: #27ae60; font-weight: 600; }
+            .rm-selected-tag {
+                background: #e8f4fd;
+                border: 1px solid #0877c3;
+                border-radius: 7px;
+                padding: 10px 14px;
+                margin-bottom: 8px;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .rm-selected-tag .rm-tag-text { flex: 1; font-size: 13.5px; color: var(--text); line-height: 1.45; }
+            .rm-selected-tag .rm-tag-photos { font-size: 11.5px; color: #0877c3; margin-top: 3px; }
+            .rm-tag-remove {
+                background: none; border: none;
+                color: #c0392b; font-size: 20px;
+                cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0;
+            }
+            .add-btn {
+                background: #0877c3; color: #fff;
+                border: none; border-radius: 6px;
+                padding: 8px 16px; font-size: 14px;
+                font-weight: 600; cursor: pointer;
+            }
+            .add-btn:hover { background: #065f99; }
+        `;
+        document.head.appendChild(style);
+    }
+
+    RECOMMENDATIONS_CATALOGUE.forEach(rec => {
+        const hasInputs = rec.hasQty || rec.hasEarth;
+        const labelHtml = rec.template
+            .replace('{X}',  '<em style="color:#0877c3;font-style:normal;font-weight:700;">[qty]</em>')
+            .replace('{E#}', '<em style="color:#0877c3;font-style:normal;font-weight:700;">[ref]</em>');
+
+        let inputsHtml = '';
+        if (rec.hasQty) {
+            inputsHtml += `<label class="rm-input-label">${rec.qtyLabel || 'Quantity'}:</label>
+                <input type="number" min="1" max="999" value="1" id="recqty-${rec.id}" class="rm-num-input"
+                    oninput="refreshSelectedRec('${rec.id}')" onclick="event.stopPropagation()">`;
+        }
+        if (rec.hasEarth) {
+            inputsHtml += `<label class="rm-input-label">${rec.earthLabel || 'Earth ref'}:</label>
+                <input type="text" placeholder="e.g. E1" id="recearth-${rec.id}" class="rm-text-input"
+                    oninput="refreshSelectedRec('${rec.id}')" onclick="event.stopPropagation()">`;
+        }
+
+        const photoHtml = `
+            <div class="rm-photo-row" id="rec-photo-row-${rec.id}" style="display:none;">
+                <span class="rm-photo-label">📷 Photos:</span>
+                <label class="rm-photo-btn" for="rec-img-${rec.id}">
+                    Add photos
+                    <input type="file" id="rec-img-${rec.id}" accept="image/*" multiple style="display:none;"
+                        onchange="handleRecImages(this, '${rec.id}')">
+                </label>
+                <span id="rec-img-preview-${rec.id}" class="rm-photo-count"></span>
+            </div>`;
+
+        const item = document.createElement('div');
+        item.className = 'rm-repair-item';
+        item.id = 'rec-item-' + rec.id;
+        item.innerHTML = `
+            <div class="rm-repair-check-col">
+                <input type="checkbox" id="recchk-${rec.id}" class="rm-checkbox"
+                    onchange="toggleRec('${rec.id}')">
+            </div>
+            <div class="rm-repair-body">
+                <label for="recchk-${rec.id}" class="rm-repair-label">${labelHtml}</label>
+                ${hasInputs ? `<div class="rm-inputs-row" id="rec-inputs-row-${rec.id}" style="display:none;">${inputsHtml}</div>` : ''}
+                ${photoHtml}
+            </div>`;
+        container.appendChild(item);
+    });
+}
+
+function resolveRecText(rec) {
+    let text = rec.template;
+    if (rec.hasQty) {
+        const el = document.getElementById('recqty-' + rec.id);
+        text = text.replace('{X}', (el && el.value) ? el.value.trim() : '?');
+    }
+    if (rec.hasEarth) {
+        const el = document.getElementById('recearth-' + rec.id);
+        text = text.replace('{E#}', (el && el.value) ? el.value.trim() : '?');
+    }
+    return text;
+}
+
+function toggleRec(id) {
+    const chk       = document.getElementById('recchk-'      + id);
+    const item      = document.getElementById('rec-item-'    + id);
+    const inputsRow = document.getElementById('rec-inputs-row-' + id);
+    const photoRow  = document.getElementById('rec-photo-row-'  + id);
+    const rec       = RECOMMENDATIONS_CATALOGUE.find(r => r.id === id);
+    if (!rec) return;
+
+    if (chk.checked) {
+        item.classList.add('rm-selected');
+        if (inputsRow) inputsRow.style.display = 'flex';
+        if (photoRow)  photoRow.style.display  = 'flex';
+        window.selectedRecommendations.push({ id, text: resolveRecText(rec), custom: false });
+    } else {
+        item.classList.remove('rm-selected');
+        if (inputsRow) inputsRow.style.display = 'none';
+        if (photoRow)  photoRow.style.display  = 'none';
+        window.selectedRecommendations = window.selectedRecommendations.filter(r => r.id !== id);
+        delete window.imageStore['rec-' + id];
+        const prev = document.getElementById('rec-img-preview-' + id);
+        if (prev) prev.textContent = '';
+    }
+    renderSelectedRecs();
+    updateAllDots();
+}
+
+function refreshSelectedRec(id) {
+    const existing = window.selectedRecommendations.find(r => r.id === id);
+    if (!existing) return;
+    const rec = RECOMMENDATIONS_CATALOGUE.find(r => r.id === id);
+    if (!rec) return;
+    existing.text = resolveRecText(rec);
+    renderSelectedRecs();
+}
+
+function addCustomRec() {
+    const ta = document.getElementById('customRecText');
+    const text = (ta.value || '').trim();
+    if (!text) { ta.focus(); return; }
+    const id = 'custom-' + Date.now();
+    window.selectedRecommendations.push({ id, text, custom: true });
+    ta.value = '';
+    renderSelectedRecs();
+    updateAllDots();
+}
+
+function removeSelectedRec(id) {
+    window.selectedRecommendations = window.selectedRecommendations.filter(r => r.id !== id);
+    const chk = document.getElementById('recchk-' + id);
+    if (chk) {
+        chk.checked = false;
+        document.getElementById('rec-item-' + id)?.classList.remove('rm-selected');
+        const inputsRow = document.getElementById('rec-inputs-row-' + id);
+        const photoRow  = document.getElementById('rec-photo-row-'  + id);
+        if (inputsRow) inputsRow.style.display = 'none';
+        if (photoRow)  photoRow.style.display  = 'none';
+    }
+    delete window.imageStore['rec-' + id];
+    renderSelectedRecs();
+    updateAllDots();
+}
+
+function renderSelectedRecs() {
+    const container = document.getElementById('selectedRecContainer');
+    if (!container) return;
+    if (!window.selectedRecommendations.length) {
+        container.innerHTML = '<p style="color:#888;font-style:italic;font-size:13px;">No recommendations selected yet.</p>';
+        return;
+    }
+    container.innerHTML = window.selectedRecommendations.map((r, i) => {
+        const imgs = window.imageStore['rec-' + r.id];
+        const imgCount = Array.isArray(imgs) ? imgs.length : (imgs ? 1 : 0);
+        const photoNote = imgCount > 0 ? `<div class="rm-tag-photos">📷 ${imgCount} photo${imgCount > 1 ? 's' : ''} attached</div>` : '';
+        const uploadRow = r.custom ? `
+            <div class="rm-photo-row" style="margin-top:8px;">
+                <span class="rm-photo-label">📷 Photos:</span>
+                <label class="rm-photo-btn" for="rec-custom-img-${r.id}">
+                    Add photos
+                    <input type="file" id="rec-custom-img-${r.id}" accept="image/*" multiple style="display:none;"
+                        onchange="handleRecImages(this, '${r.id}')">
+                </label>
+                <span id="rec-img-preview-${r.id}" class="rm-photo-count">${imgCount > 0 ? '✓ ' + imgCount + ' photo(s)' : ''}</span>
+            </div>` : '';
+        return `
+            <div class="rm-selected-tag">
+                <div class="rm-tag-text">
+                    <strong>${i + 1}.</strong> ${r.text}
+                    ${photoNote}${uploadRow}
+                </div>
+                <button class="rm-tag-remove" onclick="removeSelectedRec('${r.id}')" title="Remove">×</button>
+            </div>`;
+    }).join('');
+}
+
+function handleRecImages(input, recId) {
+    if (!input.files.length) return;
+    const files = Array.from(input.files);
+    const previewEl = document.getElementById('rec-img-preview-' + recId);
+    if (previewEl) previewEl.textContent = 'Processing...';
+    Promise.all(files.map(f =>
+        fixImageOrientation(f).then(corrected =>
+            compressImage(corrected, 800, 800, 0.65)
+        )
+    )).then(results => {
+        const storeKey = 'rec-' + recId;
+        const existing = window.imageStore[storeKey] || [];
+        window.imageStore[storeKey] = existing.concat(results);
+        const total = window.imageStore[storeKey].length;
+        if (previewEl) previewEl.textContent = '✓ ' + total + ' photo(s)';
+        renderSelectedRecs();
+        updateAllDots();
+    });
+}
+</script>

@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey Report — StrikeR</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/png" href="assets/SP Bolt 400x400.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="StrikeR">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+<body>
+<div class="container">
+
+    <div class="nav-header">
+        <button class="nav-button back-button" onclick="location.href='reports.html'">← Back to Reports</button>
+        <button class="nav-button" onclick="location.href='tools.html'">Tools</button>
+    </div>
+
+    <h1>Survey Report</h1>
+
+    <!-- ===================== SITE INFORMATION ===================== -->
+    <div class="section" id="sec-site">
+        <button class="section-header" onclick="toggleSection('sec-site')">
+            <span class="section-title">📋 Site Information</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-site"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="siteName">Site Name:</label>
+                    <input type="text" id="siteName" placeholder="e.g. Upper Norwood Library...">
+                </div>
+                <div class="form-group">
+                    <label for="jobReference">Job Reference:</label>
+                    <input type="text" id="jobReference" placeholder="Enter job reference...">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="siteAddress">Site Address:</label>
+                    <textarea id="siteAddress" rows="3" placeholder="Enter full site address..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="surveyDate">Survey Date:</label>
+                    <input type="date" id="surveyDate">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="surveyorName">Surveyor Name:</label>
+                    <input type="text" id="surveyorName" placeholder="Enter surveyor name..." oninput="this.value=this.value.replace(/(?:^|\s)\S/g,c=>c.toUpperCase())">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Building Image (Cover Page):</label>
+                <div class="image-upload" onclick="document.getElementById('buildingImageFile').click()">
+                    <input type="file" id="buildingImageFile" accept="image/*" class="hidden-file-input"
+                        onchange="handleImageUpload(this, 'buildingImagePreview')">
+                    <div id="buildingImagePreview">Click to upload building photo</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== STRUCTURE ASSESSMENT ===================== -->
+    <div class="section" id="sec-structure">
+        <button class="section-header" onclick="toggleSection('sec-structure')">
+            <span class="section-title">🏗 Structure Assessment</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-structure"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+            <div class="form-group">
+                <label for="structureType">Structure Type:</label>
+                <select id="structureType">
+                    <option value="">Select structure type...</option>
+                    <option>Residential Single Family Home</option>
+                    <option>Residential Multi-Family Home</option>
+                    <option>Residential Tower Block</option>
+                    <option>Residential Block of Flats</option>
+                    <option>Student Accommodation</option>
+                    <option>Hotel</option>
+                    <option>Office Building</option>
+                    <option>Retail Store</option>
+                    <option>Warehouse</option>
+                    <option>Manufacturing Plant</option>
+                    <option>Chemical Processing Plant</option>
+                    <option>Farm Building</option>
+                    <option>School</option>
+                    <option>University</option>
+                    <option>Hospital</option>
+                    <option>Care Home</option>
+                    <option>Church</option>
+                    <option>Telecommunications Mast/Tower</option>
+                    <option>Telecommunications Data Center</option>
+                    <option>Power Station</option>
+                    <option>Water Treatment Plant</option>
+                    <option>Sports Stadium</option>
+                    <option>Airport Terminal</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="structureHeight">Structure Height (m):</label>
+                    <input type="number" id="structureHeight" step="0.5" min="0" placeholder="0.0">
+                </div>
+                <div class="form-group">
+                    <label for="buildingAge">Building Age (years):</label>
+                    <input type="number" id="buildingAge" min="0" placeholder="e.g. 25">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="numberOfFloors">Number of Floors:</label>
+                    <input type="number" id="numberOfFloors" min="1" placeholder="e.g. 3">
+                </div>
+                <div class="form-group">
+                    <label for="numberOfOccupants">Number of Occupants:</label>
+                    <input type="number" id="numberOfOccupants" min="0" placeholder="e.g. 50">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Ground Type (select all that apply):</label>
+                <div class="checkbox-grid">
+                    <div class="checkbox-item"><input type="checkbox" id="groundGravel" class="ground-checkbox"><label for="groundGravel">Gravel</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="groundGrass" class="ground-checkbox"><label for="groundGrass">Grass</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="groundSoil" class="ground-checkbox"><label for="groundSoil">Soil</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="groundBlockPaving" class="ground-checkbox"><label for="groundBlockPaving">Block Paving</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="groundTarmac" class="ground-checkbox"><label for="groundTarmac">Tarmac</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="groundConcrete" class="ground-checkbox"><label for="groundConcrete">Concrete</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="groundResinGravel" class="ground-checkbox"><label for="groundResinGravel">Resin Gravel</label></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Wall Type (select all that apply):</label>
+                <div class="checkbox-grid">
+                    <div class="checkbox-item"><input type="checkbox" id="wallBrick" class="wall-checkbox"><label for="wallBrick">Brick</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="wallConcrete" class="wall-checkbox"><label for="wallConcrete">Concrete</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="wallSteel" class="wall-checkbox"><label for="wallSteel">Steel Frame</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="wallWood" class="wall-checkbox"><label for="wallWood">Timber Frame</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="wallMetal" class="wall-checkbox"><label for="wallMetal">Metal Cladding</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="wallGlass" class="wall-checkbox"><label for="wallGlass">Glazing/Curtain Wall</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="wallStone" class="wall-checkbox"><label for="wallStone">Stone</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="wallComposite" class="wall-checkbox"><label for="wallComposite">Composite Panels</label></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="hasBasement">Basement Present:</label>
+                <select id="hasBasement">
+                    <option value="">Select...</option>
+                    <option>Yes - Full Basement</option>
+                    <option>Yes - Partial Basement</option>
+                    <option>No Basement</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="roofType">Roof Type:</label>
+                    <select id="roofType">
+                        <option value="">Select roof type...</option>
+                        <option>Flat Felt</option>
+                        <option>Flat Membrane</option>
+                        <option>Flat Concrete</option>
+                        <option>Pitched Tiles</option>
+                        <option>Pitched Slate</option>
+                        <option>Pitched Metal</option>
+                        <option>Complex Multiple Levels</option>
+                        <option>Dome</option>
+                        <option>Green Roof</option>
+                        <option>Thatch</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="roofAccess">Roof Access:</label>
+                    <select id="roofAccess">
+                        <option value="">Select...</option>
+                        <option>Internal Stairs Roof Access</option>
+                        <option>Internal Ladder with Roof Hatch</option>
+                        <option>External Ladder</option>
+                        <option>No Access</option>
+                        <option>Requires Special Equipment</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== EXISTING LP ASSESSMENT ===================== -->
+    <div class="section" id="sec-lp">
+        <button class="section-header" onclick="toggleSection('sec-lp')">
+            <span class="section-title">⚡ Existing Lightning Protection Assessment</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-lp"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="existingSystem">Lightning Protection System:</label>
+                    <select id="existingSystem">
+                        <option value="">Select...</option>
+                        <option>None Installed</option>
+                        <option>Full System Present</option>
+                        <option>Partial System</option>
+                        <option>Visibly Damaged System</option>
+                        <option>System Present - Condition Unknown</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="systemCondition">Overall Condition:</label>
+                    <select id="systemCondition">
+                        <option value="">Select condition...</option>
+                        <option>Excellent</option>
+                        <option>Good</option>
+                        <option>Fair</option>
+                        <option>Poor</option>
+                        <option>Dangerous</option>
+                        <option>N/A - No System</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>System Components Visible:</label>
+                <div class="checkbox-grid">
+                    <div class="checkbox-item"><input type="checkbox" id="airTerminalsPresent" class="system-checkbox"><label for="airTerminalsPresent">Air Termination Conductors</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="downConductorsVisible" class="system-checkbox"><label for="downConductorsVisible">External Down Conductors</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="earthSystemAccessible" class="system-checkbox"><label for="earthSystemAccessible">Earth Pits Accessible</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="spdInstallation" class="system-checkbox"><label for="spdInstallation">SPD Installation</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="testRecordsAvailable" class="system-checkbox"><label for="testRecordsAvailable">Test Records Available</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="asInstalledAvailable" class="system-checkbox"><label for="asInstalledAvailable">As-Installed Drawings Available</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="testClamps" class="system-checkbox"><label for="testClamps">External Test Clamps</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="bondingVisible" class="system-checkbox"><label for="bondingVisible">Equipotential Bonding</label></div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="lastTested">Last Tested:</label>
+                    <select id="lastTested">
+                        <option value="">Select...</option>
+                        <option>Within 12 months</option>
+                        <option>1-2 years ago</option>
+                        <option>2-5 years ago</option>
+                        <option>Over 5 years ago</option>
+                        <option>Never tested</option>
+                        <option>Unknown</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="standardInstalled">Standard Installed To:</label>
+                    <select id="standardInstalled">
+                        <option value="">Select...</option>
+                        <option>BS EN 62305</option>
+                        <option>BS 6651</option>
+                        <option>CP 326</option>
+                        <option>NF C 17-102</option>
+                        <option>Unknown Standard</option>
+                        <option>Non-Standard Installation</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== RISK FACTORS ===================== -->
+    <div class="section" id="sec-risk">
+        <button class="section-header" onclick="toggleSection('sec-risk')">
+            <span class="section-title">⚠️ Identified Risk Factors</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-risk"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+            <div class="checkbox-grid">
+                <div class="checkbox-item"><input type="checkbox" id="heightRisk" class="risk-checkbox"><label for="heightRisk">Structure Height (&gt;20m)</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="isolationRisk" class="risk-checkbox"><label for="isolationRisk">Isolated Location</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="hilltopRisk" class="risk-checkbox"><label for="hilltopRisk">Hilltop/Elevated Location</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="metalRoof" class="risk-checkbox"><label for="metalRoof">Metal Roof/Structure</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="flammableRisk" class="risk-checkbox"><label for="flammableRisk">Flammable Materials</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="occupancyRisk" class="risk-checkbox"><label for="occupancyRisk">High Occupancy (&gt;50 people)</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="electronicRisk" class="risk-checkbox"><label for="electronicRisk">Sensitive Electronics</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="historicRisk" class="risk-checkbox"><label for="historicRisk">Historic/Heritage Building</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="explosiveRisk" class="risk-checkbox"><label for="explosiveRisk">Explosive Materials</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="criticalInfrastructure" class="risk-checkbox"><label for="criticalInfrastructure">Critical Infrastructure</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="previousDamage" class="risk-checkbox"><label for="previousDamage">Previous Lightning Damage</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="nearbyUtilities" class="risk-checkbox"><label for="nearbyUtilities">Nearby Utilities/Power Lines</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="waterExposure" class="risk-checkbox"><label for="waterExposure">Near Water/High Moisture</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="externalTanks" class="risk-checkbox"><label for="externalTanks">External Fuel/Chemical Tanks</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="crowdedArea" class="risk-checkbox"><label for="crowdedArea">Public Assembly Area</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="meteorologicalRisk" class="risk-checkbox"><label for="meteorologicalRisk">High Lightning Activity Area</label></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== CONNECTED ELECTRICAL SYSTEMS ===================== -->
+    <div class="section" id="sec-electrical">
+        <button class="section-header" onclick="toggleSection('sec-electrical')">
+            <span class="section-title">🔌 Connected Electrical Systems</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-electrical"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+            <p style="font-style:italic;color:#6c757d;margin-bottom:12px;">Identify electrical systems for surge protection assessment:</p>
+            <div class="checkbox-grid">
+                <div class="checkbox-item"><input type="checkbox" id="powerLV" class="electrical-checkbox"><label for="powerLV">Power Supply (LV Distribution)</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="powerHV" class="electrical-checkbox"><label for="powerHV">Power Supply (HV Connection)</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="emergencyPower" class="electrical-checkbox"><label for="emergencyPower">Emergency Power/Generator</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="telecomData" class="electrical-checkbox"><label for="telecomData">Telecommunications/Data</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="internet" class="electrical-checkbox"><label for="internet">Internet/Broadband</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="cctv" class="electrical-checkbox"><label for="cctv">CCTV/Security Systems</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="fireAlarm" class="electrical-checkbox"><label for="fireAlarm">Fire Alarm System</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="securityAlarm" class="electrical-checkbox"><label for="securityAlarm">Security/Intruder Alarm</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="accessControl" class="electrical-checkbox"><label for="accessControl">Access Control System</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="externalLighting" class="electrical-checkbox"><label for="externalLighting">External Lighting</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="emergencyLighting" class="electrical-checkbox"><label for="emergencyLighting">Emergency Lighting</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="signageLighting" class="electrical-checkbox"><label for="signageLighting">Signage/Display Lighting</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="hvacControls" class="electrical-checkbox"><label for="hvacControls">HVAC Control Systems</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="buildingManagement" class="electrical-checkbox"><label for="buildingManagement">Building Management System</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="liftSystems" class="electrical-checkbox"><label for="liftSystems">Lift/Elevator Systems</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="industrialControls" class="electrical-checkbox"><label for="industrialControls">Industrial Control Systems</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="medicalEquipment" class="electrical-checkbox"><label for="medicalEquipment">Medical Equipment</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="serverRoom" class="electrical-checkbox"><label for="serverRoom">Server/IT Equipment</label></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== OBSERVATIONS ===================== -->
+    <div class="section" id="sec-observations">
+        <button class="section-header" onclick="toggleSection('sec-observations')">
+            <span class="section-title">📝 Engineer's Additional Observations</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-observations"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+            <div class="form-group">
+                <label for="surveyFindings">Observations:</label>
+                <textarea id="surveyFindings" rows="6" placeholder="Document detailed observations, measurements, existing conditions, access limitations, and any other relevant findings..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== SURVEY PHOTOS ===================== -->
+    <div class="section" id="sec-photos">
+        <button class="section-header" onclick="toggleSection('sec-photos')">
+            <span class="section-title">📷 Survey Photos</span>
+            <span class="section-right"><span class="status-dot" id="dot-sec-photos"></span><span class="chevron">▾</span></span>
+        </button>
+        <div class="section-body">
+            <div class="form-group">
+                <label>Upload Survey Photos:</label>
+                <div class="image-upload" onclick="document.getElementById('additionalPhotosFile').click()">
+                    <input type="file" id="additionalPhotosFile" accept="image/*" multiple class="hidden-file-input"
+                        onchange="handleMultipleImageUpload(this, 'additionalPhotosPreview')">
+                    <div id="additionalPhotosPreview">Click to upload survey photos</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- ══ Client Signature Section ══ -->
+        <div class="section" id="sec-client-sig">
+            <button class="section-header" onclick="toggleSection('sec-client-sig')">
+                <span class="section-title">✍️ Client Signature</span>
+                <span class="section-right"><span class="status-dot" id="dot-sec-client-sig"></span><span class="chevron">▾</span></span>
+            </button>
+            <div class="section-body" id="body-sec-client-sig">
+                <div style="text-align:center;padding:16px 0;">
+                    <div id="sigSavedIndicator" style="display:none;margin-bottom:12px;">
+                        <span style="color:#27ae60;font-weight:700;font-size:15px;">✅ Signature saved</span>
+                        <span id="sigSavedName" style="color:var(--text-muted);font-size:13px;margin-left:8px;"></span>
+                    </div>
+                    <button type="button" id="btnOpenSigModal" onclick="openSigModal()">✍️ Add Client Signature</button>
+                </div>
+            </div>
+        </div>
+        <!-- ══ End Client Signature Section ══ -->
+
+     <!-- ══ Site Drawing Section ══ -->
+        <div class="section" style="margin-bottom:80px;">
+            <div class="section-header" style="cursor:default;">
+                <span class="section-title">📐 Site Drawing</span>
+            </div>
+            <div class="section-body open">
+                <!-- Empty state -->
+                <div id="drawingEmpty" style="text-align:center;padding:10px 0;">
+                    <p style="color:var(--text-muted);margin-bottom:14px;font-size:14px;">No drawing added yet. Open the drawing tool to create a site plan.</p>
+                    <button type="button" onclick="openDrawingTool()">📐 Open Drawing Tool</button>
+                </div>
+                <!-- Preview state (shown when drawing saved) -->
+                <div id="drawingPreview" style="display:none;">
+                    <img id="drawingThumb" src="" alt="Site drawing preview"
+                        style="width:100%;max-width:600px;display:block;margin:0 auto 12px;border:1px solid var(--border);border-radius:6px;">
+                    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px;">
+                        <button type="button" onclick="openDrawingTool()">✏️ Edit Drawing</button>
+                        <button type="button" onclick="removeDrawing()" style="background:var(--danger);color:white;">🗑 Remove Drawing</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+</div><!-- /container -->
+
+<div class="sticky-generate">
+    <button id="generateSurveyReport" onclick="generateSurveyPDF()">⚡ Generate Survey Report PDF</button>
+</div>
+
+<!-- ══ Client Signature Modal ══ -->
+<div id="sigModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;">
+    <div style="background:var(--dark2);border:1px solid var(--border);border-radius:14px;padding:28px 24px;width:92%;max-width:440px;box-shadow:0 8px 40px rgba(0,0,0,0.6);">
+        <h3 style="margin:0 0 18px;font-size:1.1em;color:var(--text);">✍️ Client Signature</h3>
+        <div class="form-group" style="margin-bottom:14px;">
+            <label for="sigModalName">Client / Site Representative Name</label>
+            <input type="text" id="sigModalName" placeholder="Enter name..."
+                oninput="this.value=this.value.replace(/(?:^|\s)\S/g,c=>c.toUpperCase())">
+        </div>
+        <div class="form-group" style="margin-bottom:16px;">
+            <label>Signature</label>
+            <div style="border:2px solid var(--primary);border-radius:8px;background:#fff;">
+                <canvas id="sigModalCanvas" width="380" height="150"
+                    style="width:100%;height:150px;display:block;border-radius:6px;cursor:crosshair;touch-action:none;"></canvas>
+            </div>
+            <button type="button" onclick="clearSigModal()" style="margin-top:6px;background:var(--dark3);color:var(--text);padding:5px 14px;border-radius:5px;font-size:12px;">Clear</button>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+            <button type="button" onclick="closeSigModal()" style="background:var(--dark3);color:var(--text);">Cancel</button>
+            <button type="button" onclick="submitSigModal()">✅ Save Signature</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ── Client Signature Modal ───────────────────────────
+let _sigCanvas, _sigCtx, _sigDrawing = false;
+let _clientSignatureData = null;
+let _clientSignatureName = '';
+
+function openSigModal() {
+    const modal = document.getElementById('sigModal');
+    modal.style.display = 'flex';
+    _sigCanvas = document.getElementById('sigModalCanvas');
+    _sigCtx    = _sigCanvas.getContext('2d');
+    _sigCtx.clearRect(0, 0, _sigCanvas.width, _sigCanvas.height);
+    if (_clientSignatureData) {
+        const img = new Image();
+        img.onload = () => _sigCtx.drawImage(img, 0, 0);
+        img.src = _clientSignatureData;
+    }
+    document.getElementById('sigModalName').value = _clientSignatureName || '';
+    _sigCanvas.onmousedown  = e => { _sigDrawing = true; _sigCtx.beginPath(); const p = _sigPos(e); _sigCtx.moveTo(p.x, p.y); };
+    _sigCanvas.onmousemove  = e => { if (!_sigDrawing) return; const p = _sigPos(e); _sigCtx.lineTo(p.x, p.y); _sigCtx.strokeStyle='#111'; _sigCtx.lineWidth=2; _sigCtx.lineCap='round'; _sigCtx.stroke(); };
+    _sigCanvas.onmouseup    = () => _sigDrawing = false;
+    _sigCanvas.onmouseleave = () => _sigDrawing = false;
+    _sigCanvas.ontouchstart = e => { e.preventDefault(); _sigDrawing = true; _sigCtx.beginPath(); const p = _sigTouchPos(e); _sigCtx.moveTo(p.x, p.y); };
+    _sigCanvas.ontouchmove  = e => { e.preventDefault(); if (!_sigDrawing) return; const p = _sigTouchPos(e); _sigCtx.lineTo(p.x, p.y); _sigCtx.strokeStyle='#111'; _sigCtx.lineWidth=2; _sigCtx.lineCap='round'; _sigCtx.stroke(); };
+    _sigCanvas.ontouchend   = e => { e.preventDefault(); _sigDrawing = false; };
+}
+function _sigPos(e) {
+    const r = _sigCanvas.getBoundingClientRect();
+    return { x: (e.clientX - r.left) * (_sigCanvas.width / r.width), y: (e.clientY - r.top) * (_sigCanvas.height / r.height) };
+}
+function _sigTouchPos(e) {
+    const t = e.touches[0], r = _sigCanvas.getBoundingClientRect();
+    return { x: (t.clientX - r.left) * (_sigCanvas.width / r.width), y: (t.clientY - r.top) * (_sigCanvas.height / r.height) };
+}
+function clearSigModal() {
+    if (_sigCtx) _sigCtx.clearRect(0, 0, _sigCanvas.width, _sigCanvas.height);
+}
+function closeSigModal() {
+    document.getElementById('sigModal').style.display = 'none';
+}
+function submitSigModal() {
+    const name = document.getElementById('sigModalName').value.trim();
+    const blank = document.createElement('canvas');
+    blank.width = _sigCanvas.width; blank.height = _sigCanvas.height;
+    const isEmpty = !_sigCtx || _sigCanvas.toDataURL() === blank.toDataURL();
+    _clientSignatureName = name;
+    _clientSignatureData = isEmpty ? null : _sigCanvas.toDataURL('image/png');
+    const indicator = document.getElementById('sigSavedIndicator');
+    const nameSpan  = document.getElementById('sigSavedName');
+    const btn       = document.getElementById('btnOpenSigModal');
+    if (_clientSignatureData || name) {
+        indicator.style.display = 'block';
+        nameSpan.textContent    = name ? '— ' + name : '';
+        btn.textContent         = '✍️ Edit Signature';
+        const dot = document.getElementById('dot-sec-client-sig');
+        if (dot) { dot.classList.add('dot-filled'); dot.classList.remove('dot-empty'); }
+    }
+    if (typeof window.triggerAutoSave === 'function') window.triggerAutoSave();
+    closeSigModal();
+}
+window.getClientSignatureData = function() {
+    return { clientSignatureData: _clientSignatureData, clientSignatureName: _clientSignatureName };
+};
+window.restoreClientSignature = function(data) {
+    if (!data) return;
+    _clientSignatureData = data.clientSignatureData || null;
+    _clientSignatureName = data.clientSignatureName || '';
+    if (_clientSignatureData || _clientSignatureName) {
+        const indicator = document.getElementById('sigSavedIndicator');
+        const nameSpan  = document.getElementById('sigSavedName');
+        const btn       = document.getElementById('btnOpenSigModal');
+        if (indicator) indicator.style.display = 'block';
+        if (nameSpan)  nameSpan.textContent = _clientSignatureName ? '— ' + _clientSignatureName : '';
+        if (btn)       btn.textContent = '✍️ Edit Signature';
+        const dot = document.getElementById('dot-sec-client-sig');
+        if (dot) { dot.classList.add('dot-filled'); dot.classList.remove('dot-empty'); }
+    }
+};
+</script>
+<!-- ══ End Client Signature Modal ══ -->
+
+<!-- ===================== SCRIPTS ===================== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="js/exif.js"></script>
+<script src="js/data.js"></script>
+<script src="js/touch-signature.js"></script>
+<script src="js/autosave.js"></script>
+<script src="js/survey-report.js"></script>
+<script src="js/drawing-pdf.js"></script>
+<script src="js/pdf-generator-survey.js"></script>
+<script src="js/survey-drawing-script.js"></script>
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js')
+            .then(r => console.log('SW registered:', r.scope))
+            .catch(e => console.log('SW failed:', e));
+    }
+
+    // ===================== IMAGE HANDLING =====================
+    window.uploadedImages = {};
+
+    function compressImage(base64Str, maxWidth, maxHeight, quality) {
+        return new Promise(resolve => {
+            const img = new Image();
+            img.onload = () => {
+                let w = img.width, h = img.height;
+                const ar = w / h;
+                if (w > maxWidth) { w = maxWidth; h = maxWidth / ar; }
+                if (h > maxHeight) { h = maxHeight; w = maxHeight * ar; }
+                const canvas = document.createElement('canvas');
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.src = base64Str;
+        });
+    }
+
+    function handleImageUpload(input, previewId) {
+        if (!input.files[0]) return;
+        const file = input.files[0];
+        document.getElementById(previewId).textContent = 'Processing...';
+        fixImageOrientation(file)
+            .then(corrected => compressImage(corrected, 800, 800, 0.65))
+            .then(data => {
+                window.uploadedImages[previewId + '_data'] = data;
+                document.getElementById(previewId).textContent = '✓ Image uploaded';
+                updateAllDots();
+            }).catch(() => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    window.uploadedImages[previewId + '_data'] = e.target.result;
+                    document.getElementById(previewId).textContent = '✓ Image uploaded';
+                    updateAllDots();
+                };
+                reader.readAsDataURL(file);
+            });
+    }
+
+    function handleMultipleImageUpload(input, previewId) {
+        if (!input.files.length) return;
+        const files = Array.from(input.files);
+        document.getElementById(previewId).textContent = 'Processing ' + files.length + ' image(s)...';
+        const promises = files.map(f =>
+            fixImageOrientation(f)
+                .then(corrected => compressImage(corrected, 800, 800, 0.65))
+                .catch(() => new Promise(res => {
+                    const r = new FileReader();
+                    r.onload = e => res(e.target.result);
+                    r.readAsDataURL(f);
+                }))
+        );
+        Promise.all(promises).then(results => {
+            window.uploadedImages[previewId + '_data'] = results;
+            document.getElementById(previewId).textContent = '✓ ' + results.length + ' photo(s) uploaded';
+            updateAllDots();
+        });
+    }
+
+    function fixImageOrientation(file) {
+        return new Promise((resolve, reject) => {
+            if (typeof EXIF === 'undefined') { reject(); return; }
+            EXIF.getData(file, function() {
+                const orientation = EXIF.getTag(this, 'Orientation') || 1;
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const isLandscape = img.width > img.height;
+                        if (isLandscape && (orientation === 6 || orientation === 8)) {
+                            canvas.width = img.height; canvas.height = img.width;
+                            if (orientation === 6) { ctx.rotate(90 * Math.PI / 180); ctx.translate(0, -canvas.width); }
+                            else { ctx.rotate(-90 * Math.PI / 180); ctx.translate(-canvas.height, 0); }
+                        } else { canvas.width = img.width; canvas.height = img.height; }
+                        ctx.drawImage(img, 0, 0);
+                        resolve(canvas.toDataURL('image/jpeg'));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    }
+
+    // ===================== BRANDING PRELOAD =====================
+    async function blobToBase64(blob) {
+        return new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(blob);
+        });
+    }
+    async function preloadBrandingImages() {
+        try {
+            const [logoBlob, footerBlob] = await Promise.all([
+                fetch('./assets/Color logo - no background (px reduction).png').then(r => r.blob()),
+                fetch('./assets/es12nobackground.png').then(r => r.blob())
+            ]);
+            window._logoBase64   = await blobToBase64(logoBlob);
+            window._footerBase64 = await blobToBase64(footerBlob);
+        } catch(e) { console.error('Failed to preload branding images:', e); }
+    }
+    preloadBrandingImages();
+</script>
+
+<script>
+// ===================== COLLAPSIBLE SECTIONS =====================
+const SECTION_IDS = ['sec-site','sec-structure','sec-lp','sec-risk','sec-electrical','sec-observations','sec-photos'];
+
+const SECTION_FIELDS = {
+    'sec-site':         ['siteName','siteAddress','surveyDate','surveyorName','jobReference'],
+    'sec-structure':    ['structureType','structureHeight','buildingAge','numberOfFloors','numberOfOccupants','roofType','roofAccess','hasBasement'],
+    'sec-lp':           ['existingSystem','systemCondition','lastTested','standardInstalled'],
+    'sec-risk':         [],
+    'sec-electrical':   [],
+    'sec-observations': ['surveyFindings'],
+    'sec-photos':       []
+};
+
+function toggleSection(id) {
+    const section = document.getElementById(id);
+    const body = section.querySelector('.section-body');
+    const chevron = section.querySelector('.chevron');
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    chevron.textContent = isOpen ? '▾' : '▴';
+    section.classList.toggle('expanded', !isOpen);
+    const state = JSON.parse(localStorage.getItem('striker-survey-sections') || '{}');
+    state[id] = !isOpen;
+    localStorage.setItem('striker-survey-sections', JSON.stringify(state));
+}
+
+function restoreSectionStates() {
+    const state = JSON.parse(localStorage.getItem('striker-survey-sections') || '{}');
+    SECTION_IDS.forEach(id => {
+        const section = document.getElementById(id);
+        if (!section) return;
+        const body = section.querySelector('.section-body');
+        const chevron = section.querySelector('.chevron');
+        const open = state[id] === true;
+        body.classList.toggle('open', open);
+        chevron.textContent = open ? '▴' : '▾';
+        section.classList.toggle('expanded', open);
+    });
+}
+
+function updateStatusDot(sectionId) {
+    const dot = document.getElementById('dot-' + sectionId);
+    if (!dot) return;
+    const fields = SECTION_FIELDS[sectionId] || [];
+    let filled = fields.some(id => {
+        const el = document.getElementById(id);
+        return el && el.value && el.value.trim() !== '';
+    });
+    if (sectionId === 'sec-risk')       filled = document.querySelectorAll('.risk-checkbox:checked').length > 0;
+    if (sectionId === 'sec-electrical') filled = document.querySelectorAll('.electrical-checkbox:checked').length > 0;
+    if (sectionId === 'sec-structure')  filled = filled || document.querySelectorAll('.ground-checkbox:checked, .wall-checkbox:checked').length > 0;
+    if (sectionId === 'sec-lp')         filled = filled || document.querySelectorAll('.system-checkbox:checked').length > 0;
+    if (sectionId === 'sec-photos')     filled = !!(window.uploadedImages && window.uploadedImages['additionalPhotosPreview_data']);
+    dot.classList.toggle('dot-filled', filled);
+    dot.classList.toggle('dot-empty', !filled);
+}
+
+function updateAllDots() { SECTION_IDS.forEach(updateStatusDot); }
+
+function initSectionWatchers() {
+    document.querySelectorAll('input, select, textarea').forEach(el => {
+        el.addEventListener('change', updateAllDots);
+        el.addEventListener('input', updateAllDots);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    restoreSectionStates();
+    initSectionWatchers();
+    updateAllDots();
+    const d = document.getElementById('surveyDate');
+    if (d && !d.value) d.valueAsDate = new Date();
+
+});
+</script>
+</body>
+</html>
