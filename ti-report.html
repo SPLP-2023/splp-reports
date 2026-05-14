@@ -828,12 +828,15 @@ function prefillFromJob() {
     const returnUrl = params.get('returnUrl');
     if (!returnUrl && !params.get('site') && !params.get('address')) return;
 
+    const engineer = params.get('engineer') || '';
+    const kitMap = { 'Lewis Kirk': 'M10', 'Josh Barbour': 'M6', 'Luke Storey': 'M1' };
+
     const fieldMap = {
-        siteAddress:   params.get('address') || '',
-        testDate:      params.get('date')     || '',
-        engineerName:  params.get('engineer') || '',
-        siteName:      params.get('site')     || '',
-        jobReference:  params.get('ref')      || ''
+        siteAddress:  params.get('address') || '',
+        engineerName: engineer,
+        siteName:     params.get('site')    || '',
+        jobReference: params.get('ref')     || '',
+        testKitRef:   kitMap[engineer]      || ''
     };
 
     Object.entries(fieldMap).forEach(([id, value]) => {
